@@ -30,7 +30,9 @@ export function LoginForm({
 								action={async () => {
 									"use server";
 
-									await signIn("github", { redirectTo: "/" });
+									await signIn("github", {
+										redirectTo: "/api/auth/login",
+									});
 								}}
 							>
 								<Button
@@ -45,7 +47,9 @@ export function LoginForm({
 								action={async () => {
 									"use server";
 
-									await signIn("google", { redirectTo: "/" });
+									await signIn("google", {
+										redirectTo: "/api/auth/login",
+									});
 								}}
 							>
 								<Button

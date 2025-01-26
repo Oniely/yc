@@ -6,10 +6,11 @@ import { Button } from "./ui/button";
 
 export default function StartupCard({ post }: { post: any }) {
 	const {
-		_id,
-		_createdAt,
+		id,
+		createdAt,
 		views,
-		author: { _id: authorId, name: authorName },
+		slug,
+		author: { id: authorId, name: authorName },
 		description,
 		image,
 		category,
@@ -19,7 +20,7 @@ export default function StartupCard({ post }: { post: any }) {
 	return (
 		<li className="startup-card group">
 			<div className="flex-between">
-				<p className="startup-card_date">{formatDate(_createdAt)}</p>
+				<p className="startup-card_date">{formatDate(createdAt)}</p>
 				<div className="flex gap-1.5">
 					<EyeIcon className="size-6 text-primary" />
 					<span>{views}</span>
@@ -33,7 +34,7 @@ export default function StartupCard({ post }: { post: any }) {
 							{authorName}
 						</p>
 					</Link>
-					<Link href={`/startup/${_id}`}>
+					<Link href={`/startup/${slug}`}>
 						<h3 className="text-26-semibold line-clamp-1">
 							{title}
 						</h3>
@@ -50,7 +51,7 @@ export default function StartupCard({ post }: { post: any }) {
 				</Link>
 			</div>
 
-			<Link href={`/startup/${_id}`}>
+			<Link href={`/startup/${slug}`}>
 				<p className="startup-card_desc">{description}</p>
 
 				<img
@@ -61,11 +62,11 @@ export default function StartupCard({ post }: { post: any }) {
 			</Link>
 
 			<div className="flex-between gap-3 mt-5">
-				<Link href={`/?query=${category.toLowerCase()}`}>
+				<Link href={`/?query=${category?.toLowerCase()}`}>
 					<p className="text-16-medium">{category}</p>
 				</Link>
 				<Button className="startup-card_btn" asChild>
-					<Link href={`/startup/${_id}`}>Details</Link>
+					<Link href={`/startup/${slug}`}>Details</Link>
 				</Button>
 			</div>
 		</li>

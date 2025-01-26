@@ -8,6 +8,10 @@
 	:root {
 		--radius: 0.5rem;
 	}
+
+	body {
+		@apply bg-white-100;
+	}
 }
 
 @layer utilities {
@@ -158,7 +162,7 @@
 
 	/* startupform */
 	.startup-form {
-		@apply max-w-2xl mx-auto bg-white my-10 space-y-8 px-6;
+		@apply max-w-2xl mx-auto bg-white-100 my-10 space-y-8 px-6;
 	}
 
 	.startup-form_label {
