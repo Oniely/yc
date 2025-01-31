@@ -1,5 +1,13 @@
 import { relations } from "drizzle-orm";
-import { integer, pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import {
+	boolean,
+	integer,
+	pgTable,
+	serial,
+	text,
+	timestamp,
+} from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
 
 export const authors = pgTable("authors", {
 	id: serial("id").primaryKey(),
@@ -8,6 +16,7 @@ export const authors = pgTable("authors", {
 	username: text("username").notNull().unique(),
 	bio: text("bio").notNull(),
 	image: text("image").notNull(),
+	onboarded: boolean().default(false),
 	createdAt: timestamp("created_at").notNull().defaultNow(),
 	updatedAt: timestamp("updated_at")
 		.notNull()
@@ -17,6 +26,7 @@ export const authors = pgTable("authors", {
 export const authorRelations = relations(authors, ({ many }) => ({
 	startups: many(startups),
 }));
+export const authorInsertSchema = createInsertSchema(authors);
 
 export const startups = pgTable("startups", {
 	id: serial("id").primaryKey(),

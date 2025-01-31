@@ -31,7 +31,7 @@ export function LoginForm({
 									"use server";
 
 									await signIn("github", {
-										redirectTo: "/api/auth/login",
+										redirectTo: "/onboarding",
 									});
 								}}
 							>
@@ -48,7 +48,7 @@ export function LoginForm({
 									"use server";
 
 									await signIn("google", {
-										redirectTo: "/api/auth/login",
+										redirectTo: "/onboarding",
 									});
 								}}
 							>

@@ -10,8 +10,6 @@ import View from "@/components/View";
 
 const md = markdownit();
 
-export const experimental_ppr = true;
-
 export default async function Startup({
 	params,
 }: {
@@ -22,7 +20,7 @@ export default async function Startup({
 
 	if (!post) return notFound();
 
-	const parsedContent = md.render(post?.pitch || "");
+	const parsedContent = md.renderInline(post?.pitch || "");
 
 	return (
 		<>

@@ -3,7 +3,9 @@ import { SelectAuthor, authors, startups } from "../schema";
 import { desc, eq, ilike, or } from "drizzle-orm";
 
 export async function getUserByEmail(email: SelectAuthor["email"]) {
-	return db.select().from(authors).where(eq(authors.email, email));
+	return db.query.authors.findFirst({
+		where: (author, { eq }) => eq(author.email, email),
+	});
 }
 
 export async function fetchStartups(searchQuery: string | null) {

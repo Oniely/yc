@@ -12,8 +12,6 @@ export default async function Home({
 
 	const posts = await fetchStartups(params.search);
 
-	console.log(JSON.stringify(posts, null, 2));
-
 	return (
 		<>
 			<section className="pink_container">
