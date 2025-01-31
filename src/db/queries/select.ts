@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "@/db";
 import { SelectAuthor, authors, startups } from "../schema";
 import { desc, eq, ilike, or } from "drizzle-orm";

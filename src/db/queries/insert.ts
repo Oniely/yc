@@ -1,3 +1,5 @@
+"use server";
+
 import { db } from "../index";
 import { InsertAuthor, authors } from "../schema";
 
