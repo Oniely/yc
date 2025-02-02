@@ -61,7 +61,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${workSans.variable} antialiased`}>
+			<body
+				className={`${workSans.variable} antialiased`}
+				suppressHydrationWarning
+			>
 				{children}
 				<Toaster />
 			</body>

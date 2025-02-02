@@ -3,79 +3,85 @@
 import { Send } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { Textarea } from "./ui/textarea";
 import MDEditor from "@uiw/react-md-editor";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { createPitch } from "@/db/queries/insert";
+import { startupInsertSchema } from "@/db/schema";
+import { z } from "zod";
 
 export default function StartupForm() {
-	const [errors, setErrors] = useState({});
+	const [errors, setErrors] = useState<any>({});
 	const [pitch, setPitch] = useState("");
 	const { toast } = useToast();
 	const router = useRouter();
 
-	const [isPending, setIsPending] = useState(false);
+	const handleFormSubmit = async (prevState: any, formData: FormData) => {
+		try {
+			const formValues = {
+				title: formData.get("title") as string,
+				description: formData.get("description") as string,
+				category: formData.get("category") as string,
+				image: formData.get("link") as string,
+				pitch,
+				authorId: 100,
+				slug: "random",
+			};
 
-	// const handleFormSubmit = async (prevState: any, formData: FormData) => {
-	// 	try {
-	// 		const formValues = {
-	// 			title: formData.get("title") as string,
-	// 			description: formData.get("description") as string,
-	// 			category: formData.get("category") as string,
-	// 			link: formData.get("link") as string,
-	// 			pitch,
-	// 		};
+			await startupInsertSchema.parseAsync(formValues);
 
-	// 		await formSchema.parseAsync(formValues);
+			const result = await createPitch(prevState, formData, pitch);
 
-	// 		const result = await createPitch(prevState, formData, pitch);
+			if (result?.status == "SUCCESS") {
+				toast({
+					title: "Success",
+					description:
+						"Your startup pitch has been created successfully",
+				});
 
-	// 		if (result.status == "SUCCESS") {
-	// 			toast({
-	// 				title: "Success",
-	// 				description:
-	// 					"Your startup pitch has been created successfully",
-	// 			});
+				router.push(`/startup/${result.id}`);
+			}
 
-	// 			router.push(`/startup/${result._id}`);
-	// 		}
+			return result;
+		} catch (error: any) {
+			if (error instanceof z.ZodError) {
+				const fieldErorrs = error.flatten().fieldErrors;
 
-	// 		return result;
-	// 	} catch (error: any) {
-	// 		if (error instanceof z.ZodError) {
-	// 			const fieldErorrs = error.flatten().fieldErrors;
+				setErrors(fieldErorrs as unknown as Record<string, string>);
 
-	// 			setErrors(fieldErorrs as unknown as Record<string, string>);
+				toast({
+					title: "Error",
+					description: "Please check your inputs and try again",
+					variant: "destructive",
+				});
 
-	// 			toast({
-	// 				title: "Error",
-	// 				description: "Please check your inputs and try again",
-	// 				variant: "destructive",
-	// 			});
+				return {
+					...prevState,
+					error: "Validation failed",
+					status: "ERROR",
+				};
+			}
 
-	// 			return {
-	// 				...prevState,
-	// 				error: "Validation failed",
-	// 				status: "ERROR",
-	// 			};
-	// 		}
+			toast({
+				title: "Error",
+				description: "An unexpected error has occurred",
+				variant: "destructive",
+			});
 
-	// 		toast({
-	// 			title: "Error",
-	// 			description: "An unexpected error has occurred",
-	// 			variant: "destructive",
-	// 		});
+			return {
+				...prevState,
+				error: "An unexpected error has occurred",
+				status: "ERROR",
+			};
+		}
+	};
 
-	// 		return {
-	// 			...prevState,
-	// 			error: "An unexpected error has occurred",
-	// 			status: "ERROR",
-	// 		};
-	// 	}
-	// };
-
-	const formAction = () => {};
+	const [state, formAction, isPending] = useActionState(
+		handleFormSubmit,
+		null
+	);
 
 	return (
 		<form action={formAction} className="startup-form">
@@ -91,9 +97,9 @@ export default function StartupForm() {
 					placeholder="Startup Title"
 				/>
 
-				{/* {errors.title && (
+				{errors.title && (
 					<p className="startup-form_error">{errors.title}</p>
-				)} */}
+				)}
 			</div>
 
 			<div>
@@ -108,9 +114,9 @@ export default function StartupForm() {
 					placeholder="Startup Description"
 				/>
 
-				{/* {errors.description && (
+				{errors.description && (
 					<p className="startup-form_error">{errors.description}</p>
-				)} */}
+				)}
 			</div>
 
 			<div>
@@ -125,9 +131,9 @@ export default function StartupForm() {
 					placeholder="Startup Category (Tech, Health, Education...)"
 				/>
 
-				{/* {errors.category && (
+				{errors.category && (
 					<p className="startup-form_error">{errors.category}</p>
-				)} */}
+				)}
 			</div>
 
 			<div>
@@ -137,14 +143,15 @@ export default function StartupForm() {
 				<Input
 					id="link"
 					name="link"
+					type="url"
 					className="startup-form_input"
 					required
 					placeholder="Startup Image URL"
 				/>
 
-				{/* {errors.link && (
+				{errors.link && (
 					<p className="startup-form_error">{errors.link}</p>
-				)} */}
+				)}
 			</div>
 
 			<div data-color-mode="light">
@@ -169,9 +176,9 @@ export default function StartupForm() {
 					}}
 				/>
 
-				{/* {errors.pitch && (
+				{errors.pitch && (
 					<p className="startup-form_error">{errors.pitch}</p>
-				)} */}
+				)}
 			</div>
 
 			<Button

@@ -3,6 +3,7 @@
 import { db } from "@/db";
 import { SelectAuthor, authors, startups } from "../schema";
 import { desc, eq, ilike, or } from "drizzle-orm";
+import slugify from "slugify";
 
 export async function getUserByEmail(email: SelectAuthor["email"]) {
 	return db.query.authors.findFirst({
@@ -50,4 +51,16 @@ export async function getStartup(slug: string | null) {
 			author: true,
 		},
 	});
+}
+
+export async function checkAndReturnSlug(
+	slug: string,
+	counter: number = 1
+): Promise<string> {
+	const startup = await getStartup(slug);
+
+	if (!startup) return slug;
+
+	const new_slug = `${slugify(slug)}-${counter}`;
+	return checkAndReturnSlug(new_slug, counter + 1);
 }
