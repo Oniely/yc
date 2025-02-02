@@ -29,7 +29,6 @@ export async function createPitch(
 	const link = formData.get("link") as string;
 
 	const startup_slug = slugify(title);
-	console.log(startup_slug);
 	const checkedSlug = await checkAndReturnSlug(startup_slug);
 
 	const inserted = await db.insert(startups).values({

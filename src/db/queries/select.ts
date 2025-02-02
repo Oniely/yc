@@ -11,6 +11,12 @@ export async function getUserByEmail(email: SelectAuthor["email"]) {
 	});
 }
 
+export async function getUserByUsername(username: SelectAuthor["username"]) {
+	return db.query.authors.findFirst({
+		where: (author, { eq }) => eq(author.username, username),
+	});
+}
+
 export async function fetchStartups(searchQuery: string | null) {
 	return db
 		.select({
@@ -22,6 +28,7 @@ export async function fetchStartups(searchQuery: string | null) {
 				id: authors.id,
 				name: authors.name,
 				email: authors.email,
+				username: authors.username,
 			},
 			image: startups.image,
 			description: startups.description,
@@ -57,10 +64,24 @@ export async function checkAndReturnSlug(
 	slug: string,
 	counter: number = 1
 ): Promise<string> {
-	const startup = await getStartup(slug);
+	// Only remove special characters but keep spaces
+	const cleanSlug = counter === 1 
+		? slugify(slug, { lower: true, replacement: ' ' }) 
+		: slug;
+	
+	const startup = await getStartup(cleanSlug);
 
-	if (!startup) return slug;
+	if (!startup) return cleanSlug;
 
-	const new_slug = `${slugify(slug)}-${counter}`;
+	const new_slug = `${cleanSlug}-${counter}`;
 	return checkAndReturnSlug(new_slug, counter + 1);
+}
+
+export async function fetchAuthorStartups(id: number) {
+	return db.query.startups.findMany({
+		where: (startup, { eq }) => eq(startup.authorId, id),
+		with: {
+			author: true,
+		},
+	});
 }

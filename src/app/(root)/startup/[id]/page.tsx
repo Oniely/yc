@@ -40,7 +40,10 @@ export default async function Startup({
 
 				<div className="space-y-5 mt-10 max-w-4xl mx-auto">
 					<div className="flex-between gap-5">
-						<Link href={`/user/${post.author.id}`} className="">
+						<Link
+							href={`/user/${post.author.username}`}
+							className=""
+						>
 							<Image
 								src={post.author.image}
 								alt={`${post.author.name}'s Profile Image`}

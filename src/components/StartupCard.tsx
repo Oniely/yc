@@ -1,8 +1,9 @@
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 import { EyeIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { Skeleton } from "./ui/skeleton";
 
 export default function StartupCard({ post }: { post: any }) {
 	const {
@@ -10,7 +11,7 @@ export default function StartupCard({ post }: { post: any }) {
 		createdAt,
 		views,
 		slug,
-		author: { id: authorId, name: authorName },
+		author: { id: authorId, name: authorName, username: authorUsername },
 		description,
 		image,
 		category,
@@ -29,7 +30,7 @@ export default function StartupCard({ post }: { post: any }) {
 
 			<div className="flex-between mt-5 gap-5">
 				<div className="flex-1">
-					<Link href={`/user/${authorId}`}>
+					<Link href={`/user/${authorUsername}`}>
 						<p className="text-16-medium line-clamp-1">
 							{authorName}
 						</p>
@@ -40,7 +41,7 @@ export default function StartupCard({ post }: { post: any }) {
 						</h3>
 					</Link>
 				</div>
-				<Link href={`/user/${authorId}`}>
+				<Link href={`/user/${authorUsername}`}>
 					<Image
 						src={image}
 						alt="Author Profile"
@@ -72,3 +73,13 @@ export default function StartupCard({ post }: { post: any }) {
 		</li>
 	);
 }
+
+export const StartupCardSkeleton = () => (
+	<>
+		{[0, 1, 2, 3, 4].map((index: number) => (
+			<li key={cn("skeleton", index)}>
+				<Skeleton className="startup-card_skeleton" />
+			</li>
+		))}
+	</>
+);
