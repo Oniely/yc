@@ -4,7 +4,6 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { v4 as uuidv4 } from "uuid";
-import { db } from "@/db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
 	providers: [GitHub, Google],
@@ -12,6 +11,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 		async signIn({ user, account, profile }) {
 			const existingUser = await getUserByEmail(user?.email!);
 
+			// is user is not yet registered, we'll create new user with their data from provider
+			// and generate a unique username for them derived from their name
 			if (!existingUser) {
 				const uniqueUsername = `${user?.name
 					?.replace(/\s+/g, "")
@@ -25,14 +26,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 				});
 			}
 
+			// return boolean indicating if signIn has been successful or not
 			return true;
 		},
-		async jwt({ token, trigger, user }) {
-			if (trigger === "update" && user?.name) {
-				token.name = user.name;
+		// modifying the jwt token
+		async jwt({ token, trigger, user, session }) {
+			if (trigger === "update" && session?.user?.username) {
+				token.username = session.user.username;
 				return token;
 			}
 
+			// if user has logged in successfully these callback will run automatically
+			// we'll modify the id, username, image
 			if (user) {
 				const dbUser = await getUserByEmail(user.email!);
 				if (dbUser) {
@@ -43,12 +48,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 			}
 			return token;
 		},
-		async session({ session, trigger, token }) {
-			if (trigger === "update" && token?.name) {
-				session.user.name = token.name;
-				return session;
-			}
-
+		async session({ session, token }) {
+			// now from here, coming from jwt token we will now modify the session using the modified token
+			// so we can access this session and get the user creds instead of fetching through db everytime
 			if (session.user) {
 				session.user = { ...session.user, id: token.id as string };
 				session.user = {

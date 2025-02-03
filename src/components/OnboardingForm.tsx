@@ -36,6 +36,8 @@ export default function OnboardingForm({
 		redirect("/");
 	}
 
+	// still need image, but the real problem is the session is not updating to the updated data when onboarded
+
 	return (
 		<div className={cn("flex flex-col gap-6", className)} {...props}>
 			<Card>

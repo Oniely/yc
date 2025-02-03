@@ -17,7 +17,7 @@ export async function updateUsernameAndBio(prevState: any, formData: FormData) {
 
 	const updated = await db
 		.update(authors)
-		.set({ username, bio })
+		.set({ username, bio, onboarded: true })
 		.where(eq(authors.id, authorId));
 
 	return updated;

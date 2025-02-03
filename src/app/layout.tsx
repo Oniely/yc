@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { Provider } from "@/components/Provider";
 
 const workSans = localFont({
 	src: [

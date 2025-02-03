@@ -8,7 +8,10 @@ export default function View({ id }: { id: string | number }) {
 	const [post, setPost] = useState<any>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 
+	// add an update to the view here to +1 everytime
+
 	useEffect(() => {
+		// fetch data to have an initial value for View, because realtime of supabase doesn't auto fetch when called but only when "realtime" updates happens
 		const fetchData = async () => {
 			setLoading(true);
 			const { data, error } = await supabase
@@ -27,19 +30,20 @@ export default function View({ id }: { id: string | number }) {
 
 		fetchData();
 
+		// realtime code
 		const channel = supabase
-			.channel("realtime startups")
+			.channel("realtime startups") // just channel name can be anything
 			.on(
 				"postgres_changes",
 				{
-					event: "*",
+					event: "*", // in all(*) event it will refetch (insert, update, delete)
 					schema: "public",
-					table: "startups",
-					filter: `id=eq.${id}`,
+					table: "startups", // specific table
+					filter: `id=eq.${id}`, // specific column in the table
 				},
 				(payload) => {
 					if (payload.eventType === "UPDATE") {
-						setPost(payload.new);
+						setPost(payload.new); // new() method is return everytime the data refetches, it will return the newly updated data only.
 					}
 				}
 			)

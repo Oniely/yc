@@ -11,9 +11,14 @@ export async function getUserByEmail(email: SelectAuthor["email"]) {
 	});
 }
 
-export async function getUserByUsername(username: SelectAuthor["username"]) {
+export async function getUserByUsernameOrId(id: string) {
+	const numId = parseInt(id);
+
 	return db.query.authors.findFirst({
-		where: (author, { eq }) => eq(author.username, username),
+		where: (author, { eq, or }) =>
+			Number.isNaN(numId)
+				? eq(author.username, id)
+				: or(eq(author.username, id), eq(author.id, numId)),
 	});
 }
 
@@ -64,16 +69,11 @@ export async function checkAndReturnSlug(
 	slug: string,
 	counter: number = 1
 ): Promise<string> {
-	// Only remove special characters but keep spaces
-	const cleanSlug = counter === 1 
-		? slugify(slug, { lower: true, replacement: ' ' }) 
-		: slug;
-	
-	const startup = await getStartup(cleanSlug);
+	const startup = await getStartup(slug);
 
-	if (!startup) return cleanSlug;
+	if (!startup) return slug;
 
-	const new_slug = `${cleanSlug}-${counter}`;
+	const new_slug = `${slugify(slug)}-${counter}`;
 	return checkAndReturnSlug(new_slug, counter + 1);
 }
 
